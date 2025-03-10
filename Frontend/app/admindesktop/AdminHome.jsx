@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, FlatList, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const BASE_URL = "http:// 192.168.7.75:5000/api/admin";
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
+const BASE_URL = `${EXPO_PUBLIC_SERVER_URL}/api/admin`;
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);

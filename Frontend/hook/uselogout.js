@@ -3,14 +3,14 @@ import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRouter } from "expo-router";
-
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 const useLogout = () => {
   const { setUser } = useAuthContext();
    const router = useRouter();
 
   const logout = async () => {
     try {
-      const API_URL = "http://192.168.7.75:5000/api/auth/logout";
+      const API_URL =`${EXPO_PUBLIC_SERVER_URL}/api/auth/logout`;
 
       // Make API call for logout
       const response = await axios.post(API_URL);

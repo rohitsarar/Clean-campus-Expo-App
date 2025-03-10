@@ -3,7 +3,7 @@ import { useAuthContext } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import axios from "axios";
-
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 const useSignup = () => {
   const { setUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ const useSignup = () => {
     setLoading(true); // Indicate loading state
 
     try {
-      const API_URL = "http://192.168.7.75:5000/api/auth/signup";
+      const API_URL = `${EXPO_PUBLIC_SERVER_URL}/api/auth/signup`;
       const response = await axios.post(API_URL, { name, email, password });
 
       if (response.data.error) {

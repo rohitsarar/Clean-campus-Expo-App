@@ -6,10 +6,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation, useRouter } from 'expo-router';
 import io from 'socket.io-client';
 import { useAuthContext } from '../../context/AuthContext';
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 
 
-
-const socket = io('http://192.168.7.75:5000');
+const socket = io(`${EXPO_PUBLIC_SERVER_URL}`);
 
 export default function Camera() {
   const [facing, setFacing] = useState('back');
@@ -73,7 +73,7 @@ const router=useRouter();
     // formData.append("time", formattedTime);
   
     try {
-      const response = await fetch("http://192.168.7.75:5000/api/post", {
+      const response = await fetch(`${EXPO_PUBLIC_SERVER_URL}/api/post`, {
         method: "POST",
         body: formData,
       });

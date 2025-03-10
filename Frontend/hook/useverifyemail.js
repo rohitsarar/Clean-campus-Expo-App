@@ -3,7 +3,7 @@ import { useAuthContext } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import axios from "axios";
-
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 const useVerifyEmail = () => {
   const { setUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const useVerifyEmail = () => {
     setLoading(true);
 
     try {
-      const API_URL ="http://192.168.7.75:5000/api/auth/verify-email";
+      const API_URL =`${EXPO_PUBLIC_SERVER_URL}/api/auth/verify-email`;
       const response = await axios.post(API_URL, { code });
 
       if (response.data.error) {

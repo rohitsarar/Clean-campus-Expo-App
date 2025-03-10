@@ -4,6 +4,8 @@ import io from "socket.io-client";
 import Navbar from "../../components/Navbar";
 import Posts from "../posts/Posts";
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 export default function PeonHome() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,13 +23,13 @@ export default function PeonHome() {
   const buttonBackground = theme === 'dark' ? '#007BFF' : '#28A745';
 
 
-  const socket = io("http://192.168.7.75:5000"); // Adjust the URL as needed
+  const socket = io(`${EXPO_PUBLIC_SERVER_URL}`); // Adjust the URL as needed
 
   // Fetch posts from the API
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://192.168.7.75:5000/api/posts");
+      const response = await fetch(`${EXPO_PUBLIC_SERVER_URL}/api/posts`);
       if (!response.ok) throw new Error("Failed to fetch posts");
       const data = await response.json();
       setPosts(data);

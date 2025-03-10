@@ -2,7 +2,7 @@ import { useAuthContext } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import axios from "axios";
-
+import { EXPO_PUBLIC_SERVER_URL } from "@env";
 const useLogin = () => {
   const { setUser } = useAuthContext();
 
@@ -14,7 +14,7 @@ const useLogin = () => {
     }
 
     try {
-      const API_URL = "http://192.168.7.75:5000/api/auth/login";
+      const API_URL = `${EXPO_PUBLIC_SERVER_URL}/api/auth/login`;
       const response = await axios.post(API_URL, { email, password });
 
       if (response.data.error) {
