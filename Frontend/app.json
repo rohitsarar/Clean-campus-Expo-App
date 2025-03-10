@@ -4,7 +4,7 @@
     "slug": "CleanCam-Ex-App",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icons.png",
+    "icon": "./assets/images/homelogo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,26 +13,27 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icons.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/homelogo.png",
+        "backgroundColor": "#0080ff"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/icons.png"
+      "favicon": "./assets/images/homelogo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icons.png",
+          "image": "./assets/images/homelogo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0080ff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

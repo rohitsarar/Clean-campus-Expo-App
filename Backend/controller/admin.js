@@ -1,67 +1,74 @@
-import bcrypt from "bcryptjs";  // Import bcrypt for password hashing
+import bcrypt from "bcryptjs";
 import UserModel from "../models/Users.js";
+
+// Centralized Error Handling
+const handleError = (res, message, status = 500) => {
+  console.error(message);
+  res.status(status).json({ message });
+};
 
 // Get all users
 export const Getuser = async (req, res) => {
-    try {
-        const users = await UserModel.find();  // Fetch all users
-        res.status(200).json({ users });
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error in get user" });
-    }
+  try {
+    const users = await UserModel.find();
+    res.status(200).json(users);
+  } catch (error) {
+    handleError(res, "Internal server error in get user");
+  }
 };
 
 // Delete user by ID
 export const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const checkAdmin = await UserModel.findById(id);
+  try {
+    const { id } = req.params;
+    const checkAdmin = await UserModel.findById(id);
 
-        if (checkAdmin.role === 'admin') {
-            return res.status(409).json({ message: "You cannot delete yourself" });
-        }
-
-        const user = await UserModel.findByIdAndDelete(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.status(200).json({ message: "User deleted successfully", user });
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error in delete user" });
+    if (!checkAdmin) {
+      return handleError(res, "User not found", 404);
     }
+
+    if (checkAdmin.role === "admin") {
+      return handleError(res, "You cannot delete yourself", 409);
+    }
+
+    await UserModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    handleError(res, "Internal server error in delete user");
+  }
 };
 
 // Add peon role
 export const addPeon = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
-        // Check if user with the same email already exists
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            return res.status(409).json({ message: "Email already registered" });
-        }
-
-        // Hash password before saving
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const newPeon = new UserModel({
-            name,
-            classname: 'N/A',
-            email,
-            password: hashedPassword,  // Store hashed password
-            role: 'peon',
-        });
-
-        await newPeon.save();
-        res.status(201).json({ message: "Peon added successfully" ,newPeon});
-    } catch (error) {
-        console.error("Error adding peon:", error); // Log error for debugging
-        res.status(500).json({ message: "Internal server error while adding peon" });
+    if (!name || !email || !password) {
+      return handleError(res, "All fields are required", 400);
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return handleError(res, "Invalid email format", 400);
+    }
+
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return handleError(res, "Email already registered", 409);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newPeon = new UserModel({
+      name,
+      classname: "N/A",
+      email,
+      password: hashedPassword,
+      role: "peon",
+    });
+
+    await newPeon.save();
+    res.status(201).json({ message: "Peon added successfully", newPeon });
+  } catch (error) {
+    handleError(res, "Internal server error while adding peon");
+  }
 };

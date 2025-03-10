@@ -3,7 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
+import io from 'socket.io-client';
+import { useAuthContext } from '../../context/AuthContext';
+
+
+
+const socket = io('http://192.168.7.75:5000');
 
 export default function Camera() {
   const [facing, setFacing] = useState('back');
@@ -11,8 +17,95 @@ export default function Camera() {
   const [photo, setPhoto] = useState(null);
   const [caption, setCaption] = useState('');
   const cameraRef = useRef(null);
-
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const {user}=useAuthContext();
+const router=useRouter();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerTransparent: true,
+      headerTitle: '',
+    });
+
+    socket.on('newPost', (newPost) => {
+      console.log('New post received via socket:', newPost);
+      
+    });
+
+    return () => {
+      socket.off('newPost');
+    };
+  }, [navigation]);
+
+
+
+
+
+
+
+
+
+  const handleSubmitPhoto = async () => {
+    if (!photo || !caption.trim()) {
+      alert("Please add a caption before submitting.");
+      return;
+    }
+  
+    setLoading(true); // Start loading
+  
+  
+    // const currentDate = new Date();
+    // const formattedDate = currentDate.toLocaleDateString();
+    // const formattedTime = currentDate.toLocaleTimeString();
+
+    const formData = new FormData();
+    formData.append("Post", {
+      uri: photo.uri,
+      type: photo.type || "image/jpeg",
+      name: "photo.jpg",
+    });
+  
+    formData.append("caption", caption);
+    formData.append("name", user?.name);
+    // formData.append("date", formattedDate);
+    // formData.append("time", formattedTime);
+  
+    try {
+      const response = await fetch("http://192.168.7.75:5000/api/post", {
+        method: "POST",
+        body: formData,
+      });
+     
+      if (response.ok) {
+        const responseData = await response.json();
+        const newPost = {
+          uri: photo.uri,
+          caption: caption,
+          name: user?.name,
+          date: responseData.newPost.date,
+          time: responseData.newPost.time,
+        };
+        console.log("New Post Date",newPost.date)
+        socket.emit('newPost', newPost);
+  
+        // Navigate to messages file before showing success alert
+        router.push('/(tabs)/messages');
+        alert("Post created successfully!");
+      } else {
+        const errorData = await response.json();
+        alert("Error: " + errorData.message);
+      }
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      alert("Failed to create post. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+  
+  
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,11 +127,10 @@ export default function Camera() {
       </View>
     );
   }
-
   function toggleCameraFacing() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
-
+  
   const handleTakePhoto = async () => {
     if (cameraRef.current) {
       const options = {
@@ -60,21 +152,23 @@ export default function Camera() {
     return (
       <View style={styles.previewContainer}>
         <View style={styles.imagePreview}>
-          <Image source={{ uri: 'data:image/jpg;base64,' + photo.base64 }} style={styles.photo} /> {/* Display the photo */}
+          <Image source={{ uri: 'data:image/jpg;base64,' + photo.base64 }} style={styles.photo} />
           <TextInput
             style={styles.captionInput}
-            placeholder="Add a caption..."
+            placeholder="Add a Report Location..."
             value={caption}
             onChangeText={setCaption}
+            editable={!loading} // Disable input while loading
           />
         </View>
         <View style={styles.actions}>
-          <Button title="Retake Photo" onPress={handleRetakePhoto} />
-          <Button title="Submit" />
+          <Button title="Retake Photo" onPress={handleRetakePhoto} disabled={loading} />
+          <Button title={loading ? "Submitting..." : "Submit"} onPress={handleSubmitPhoto} disabled={loading} />
         </View>
       </View>
     );
   }
+  
 
   return (
     <View style={styles.container}>
@@ -84,7 +178,7 @@ export default function Camera() {
             <Ionicons name="camera-reverse" size={40} color="green" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button1} onPress={handleTakePhoto}>
-            <MaterialIcons name="camera" size={70} color="black" />
+            <MaterialIcons name="camera" size={70} color="black"/>
           </TouchableOpacity>
         </View>
       </CameraView>

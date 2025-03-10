@@ -34,7 +34,7 @@ export default function NotificationStore() {
         <Text className='text-gray-500 text-sm'>This Week</Text>
       </View>
 
-      {/* Notifications List */}
+      {/*cd  Notifications List */}
       <ScrollView>
         {notifications.map((item, index) => (
           <View key={index} className='flex-row items-center bg-white my-1 p-2 rounded-lg mx-2 shadow-md'>

@@ -1,41 +1,39 @@
-import jwt from 'jsonwebtoken';
-import UserModel from '../models/Users.js';  // Assuming you have a User model
+
+import jwt from "jsonwebtoken";
+import UserModel from '../models/Users.js';
 
 const isAdmin = async (req, res, next) => {
     try {
-        const token = req.cookies.jwt;
+        if (!process.env.JWT_SECRET) {
+            throw new Error("JWT_SECRET is not defined in the environment");
+        }
 
-        // Check if token is provided
+        const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
         if (!token) {
             return res.status(401).json({ error: "Unauthorized - No Token Provided" });
         }
 
-        // Verify token and get decoded payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded token:", decoded);
 
-        if (!decoded) {
-            return res.status(401).json({ error: "Unauthorized - Invalid Token" });
-        }
-
-        // Retrieve user from the database using the user ID from the token
         const user = await UserModel.findById(decoded.userId);
-
         if (!user) {
-            return res.status(401).json({ message: "User not found" });
+            return res.status(401).json({ error: "User not found" });
         }
+        console.log("User fetched from DB:", user);
 
-        // Check if the user is an admin
         if (user.role !== 'admin') {
-            return res.status(403).json({ message: "Unauthorized: User is not an admin" });
+            return res.status(403).json({ error: "Unauthorized - User is not an admin" });
         }
 
-        // If the user is an admin, proceed to the next middleware or route handler
+        req.user = user; // Attach user to the request for further use
         next();
-
     } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: "Unauthorized - Token Expired" });
+        }
         console.error("Error in isAdmin middleware:", error.message);
 
-        // Send a single response for errors
         if (!res.headersSent) {
             res.status(500).json({ error: "Internal server error" });
         }
@@ -43,3 +41,21 @@ const isAdmin = async (req, res, next) => {
 };
 
 export default isAdmin;
+
+
+
+export const verifyToken = (req, res, next) => {
+	const token = req.cookies.jwt;
+	if (!token) return res.status(401).json({ success: false, message: "Unauthorized - no token provided" });
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+		if (!decoded) return res.status(401).json({ success: false, message: "Unauthorized - invalid token" });
+
+		req.userId = decoded.userId;
+		next();
+	} catch (error) {
+		console.log("Error in verifyToken ", error);
+		return res.status(500).json({ success: false, message: "Server error" });
+	}
+};

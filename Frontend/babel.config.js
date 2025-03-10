@@ -1,8 +1,22 @@
 module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    plugins: ['nativewind/babel'], // Ensure nativewind/babel is installed
-    ignore: ["**/*.css"], // Exclude CSS files from Babel processing
-  };
+    api.cache(true);
+    return {
+        presets: [
+            ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+            "nativewind/babel",
+        ],
+        plugins: [
+            'react-native-reanimated/plugin', // Ensure this is added here
+          
+          [
+            "dotenv-import",
+            {
+              moduleName: "@env",
+              path: ".env",
+              safe: true,
+              allowUndefined: false
+            },
+          ],
+        ],
+    };
 };
