@@ -20,3 +20,7 @@ build/
 # IDE-specific files (optional)
 .vscode/
 .idea/
+
+
+tmp/
+uploads/
