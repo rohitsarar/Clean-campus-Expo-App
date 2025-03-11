@@ -101,6 +101,7 @@ export const verifyEmail = async (req, res) => {
 
 export const login = async (req, res) => {
 	const { email, password } = req.body;
+	console.log("login controller")
 	try {
 		const user = await User.findOne({ email });
 		if (!user) {
@@ -131,6 +132,7 @@ export const login = async (req, res) => {
 };
 export const logout = async (req, res) => {
     try {
+		console.log("logout controller")
         // Clear JWT cookie (if used)
         res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "None" });
 
@@ -162,7 +164,7 @@ export const forgotPassword = async (req, res) => {
 		await user.save();
 
 		// send email
-		await sendPasswordResetEmail(user.email, `http://192.168.7.75/reset-password/${resetToken}`);
+		await sendPasswordResetEmail(user.email, `http://192.168.94.75/reset-password/${resetToken}`);
 
 		res.status(200).json({ success: true, message: "Password reset link sent to your email" });
 	} catch (error) {

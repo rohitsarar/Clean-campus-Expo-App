@@ -19,12 +19,15 @@ const useLogout = () => {
         Alert.alert("Logout failed", "Please try again later.");
         return;
       }
-
+      const storedToken = await AsyncStorage.getItem("jwt");
+      const storedUserData = await AsyncStorage.getItem("clean-campus");
+      
+      // console.log("logout Stored Token:", storedToken);
+      // console.log("logout Stored User Data:", JSON.parse(storedUserData)); // Parse JSON before logging
       // Clear local storage and reset user state
-      await AsyncStorage.removeItem("jwt"); // Removing token explicitly
-      await AsyncStorage.removeItem("clean-campus"); // Removing stored user data
+      await AsyncStorage.multiRemove(["jwt", "clean-campus"])
       await AsyncStorage.clear();
-w
+
       setUser(null);
 
       // Navigate to the sign-in page using router
@@ -33,7 +36,7 @@ w
       // Show success message
       Alert.alert("Logout Successful", "You have been logged out.");
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error("Error during logout:", error?.message || error);
       Alert.alert("Logout failed", "An unexpected error occurred. Please try again.");
     }
   };

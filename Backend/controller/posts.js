@@ -75,6 +75,7 @@ if (peonEmails.length > 0) {
 // Fetch Posts
 export const posts = async (req, res) => {
   try {
+    console.log("fetchingg post ")
     const posts = await Post.find().sort({ createdAt: -1 }); // Fetch all posts sorted by creation date
     res.status(200).json(posts); // Return posts as JSON
   } catch (error) {

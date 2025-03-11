@@ -5,10 +5,10 @@ import Posts from "../posts/Posts";
 import { EXPO_PUBLIC_SERVER_URL } from "@env";
 
 // const SERVER_URL = EXPO_PUBLIC_SERVER_URL;
-
 export default function TaskList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log(EXPO_PUBLIC_SERVER_URL);
   const socket = io(EXPO_PUBLIC_SERVER_URL);
 // Adjust the URL as needed
   const fadeAnim = useState(new Animated.Value(0))[0];

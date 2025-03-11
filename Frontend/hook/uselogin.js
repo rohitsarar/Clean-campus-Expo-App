@@ -12,6 +12,7 @@ const useLogin = () => {
       Alert.alert("Login Failed", "Both email and password are required.");
       return false;
     }
+    console.log("the login ",EXPO_PUBLIC_SERVER_URL)
 
     try {
       const API_URL = `${EXPO_PUBLIC_SERVER_URL}/api/auth/login`;
@@ -28,9 +29,18 @@ const useLogin = () => {
       const userData = { name, email: userEmail, role, token };
 
       // Save token and user data securely
-      await AsyncStorage.setItem("jwt", token);
-      await AsyncStorage.setItem("clean-campus", JSON.stringify(userData));
-
+      await AsyncStorage.multiSet([
+        ["jwt", token],
+        ["clean-campus", JSON.stringify(userData)],
+      ]);
+      
+      // Retrieve and log stored values properly
+      const storedToken = await AsyncStorage.getItem("jwt");
+      const storedUserData = await AsyncStorage.getItem("clean-campus");
+      
+      // console.log("Stored Token:", storedToken);
+      // console.log("Stored User Data:", JSON.parse(storedUserData)); // Parse JSON before logging
+      
       // Update context state based on role
       setUser(userData);
 
