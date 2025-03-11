@@ -8,6 +8,7 @@ import crypto from "crypto";
 // Signup
 export const signup = async (req, res) => {
     try {
+		console.log("sign up controller")
         const { email, password, name } = req.body;
 
         // Check if all fields are provided

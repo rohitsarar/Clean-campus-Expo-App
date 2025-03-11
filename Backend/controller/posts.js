@@ -13,6 +13,7 @@ cloudinary.config({
 // Create Post
 export const createPost = async (req, res) => {
   try {
+    console.log("create post controller ")
     
     const file = req.files?.['Post'] || req.files?.Post;
 

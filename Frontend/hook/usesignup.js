@@ -29,8 +29,7 @@ const useSignup = () => {
     setLoading(true); // Indicate loading state
 
     try {
-      const API_URL = `${EXPO_PUBLIC_SERVER_URL}/api/auth/signup`;
-      const response = await axios.post(API_URL, { name, email, password });
+      const response = await axios.post(`${EXPO_PUBLIC_SERVER_URL}/api/auth/signup`, { name, email, password });
 
       if (response.data.error) {
         Alert.alert("Signup Failed", response.data.error);

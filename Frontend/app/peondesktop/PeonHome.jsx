@@ -27,6 +27,7 @@ export default function PeonHome() {
 
   // Fetch posts from the API
   const fetchPosts = async () => {
+    
     try {
       setLoading(true);
       const response = await fetch(`${EXPO_PUBLIC_SERVER_URL}/api/posts`);

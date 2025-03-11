@@ -71,6 +71,7 @@ const router=useRouter();
     formData.append("name", user?.name);
     // formData.append("date", formattedDate);
     // formData.append("time", formattedTime);
+    console.log("photo click file ",EXPO_PUBLIC_SERVER_URL)
   
     try {
       const response = await fetch(`${EXPO_PUBLIC_SERVER_URL}/api/post`, {
